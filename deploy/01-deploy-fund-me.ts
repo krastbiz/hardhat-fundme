@@ -1,10 +1,10 @@
-import { network } from "hardhat";
-import type { HardhatRuntimeEnvironment } from "hardhat/types";
-import { developmentChains, networkConfig } from "../helper-hardhad.config";
-import verify from "../utils/verify";
+import { network } from "hardhat"
+import type { HardhatRuntimeEnvironment } from "hardhat/types"
+import { developmentChains, networkConfig } from "../helper-hardhad.config"
+import verify from "../utils/verify"
 
 const deployFundMe = async function (hre: HardhatRuntimeEnvironment) {
-    console.log("[LOG] Hi!");
+    console.log("[LOG] Hi!")
 
     const { deployments, getNamedAccounts } = hre
 
@@ -25,17 +25,23 @@ const deployFundMe = async function (hre: HardhatRuntimeEnvironment) {
     // when going for localhost or hardhat network we want to use mock
     const args = [ethUsdPriceFeedAddress]
     const fundMe = await deploy("FundMe", {
-        from: deployer, 
+        from: deployer,
         args,
         log: true,
-        waitConfirmations: networkConfig[network.config.chainId!].blockConfirmations || 1
+        waitConfirmations:
+            networkConfig[network.config.chainId!].blockConfirmations || 1,
     })
 
-    if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+    if (
+        !developmentChains.includes(network.name) &&
+        process.env.ETHERSCAN_API_KEY
+    ) {
         await verify(fundMe.address, args)
     }
 
-    log("--------------------------------------------------------------------------")
+    log(
+        "--------------------------------------------------------------------------"
+    )
 }
 export default deployFundMe
 deployFundMe.tags = ["all", "fundme"]
