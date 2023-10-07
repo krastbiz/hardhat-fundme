@@ -63,4 +63,26 @@ describe("FundMe", () => {
             assert.equal(response, await signer.getAddress())
         })
     })
+
+    describe("withdraw",async () => {
+        beforeEach(async () => {
+            await fundMe.fund({ value: sendValue })
+        })
+
+        it("withdraw ETH from a single founder",async () => {
+            const startingContractBalance = await ethers.provider.getBalance(await fundMe.getAddress())
+            const startingDeployerBalance = await ethers.provider.getBalance(await signer.getAddress())
+
+            const txResponse = await fundMe.withdraw()
+            const txReceipt = await txResponse.wait(1)
+
+            const endingContractBalance = await ethers.provider.getBalance(await fundMe.getAddress())
+            const endingDeployerBalance = await ethers.provider.getBalance(await signer.getAddress())
+
+            const gasCost = txReceipt!.gasUsed * txReceipt!.gasPrice
+
+            assert.equal(endingContractBalance.toString(), "0")
+            assert.equal(startingContractBalance + startingDeployerBalance, endingDeployerBalance + gasCost)
+        })
+    })
 })
